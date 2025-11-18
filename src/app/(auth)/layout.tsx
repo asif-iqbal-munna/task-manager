@@ -1,4 +1,4 @@
-import { Container } from "@chakra-ui/react";
+import { Container, Flex } from "@chakra-ui/react";
 import AppToolBar from "../../components/blocks/AppToolBar";
 
 export default function AuthLayout({
@@ -7,9 +7,11 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Container fluid centerContent padding={0}>
+    <Flex direction="column" h="100vh" overflow="hidden">
       <AppToolBar />
-      {children}
-    </Container>
+      <Container fluid centerContent padding={0} flex="1" overflow="auto">
+        {children}
+      </Container>
+    </Flex>
   );
 }

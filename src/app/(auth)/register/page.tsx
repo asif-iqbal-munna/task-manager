@@ -14,12 +14,12 @@ const page = () => {
       <Flex justify="center" align="center" w="full">
         <Card.Root w="full">
           <Card.Header textAlign="center">
-            <Card.Title>Welcome back</Card.Title>
+            <Card.Title>Create an account</Card.Title>
             <Card.Description>
-              Login to your account to continue
+              Enter your details to create an account
             </Card.Description>
           </Card.Header>
-          <AuthenticationForm />
+          <AuthenticationForm type="register" />
         </Card.Root>
       </Flex>
     </Container>

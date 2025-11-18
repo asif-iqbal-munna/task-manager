@@ -1,39 +1,104 @@
 "use client";
 
-import { Button, Field, Input, Stack } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
+import { Button, Card, Flex, Stack, Text } from "@chakra-ui/react";
+import { FormProvider, useForm } from "react-hook-form";
+import AppTextInput from "../../../../components/inputs/AppTextInput";
+import AppPasswordInput from "../../../../components/inputs/AppPasswordInput";
+import Link from "next/link";
+import {
+  loginValidationSchema,
+  registerValidationSchema,
+} from "./authValidationSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
-interface FormValues {
-  firstName: string;
-  lastName: string;
-}
+const AuthenticationForm = ({
+  type = "login",
+}: {
+  type?: "login" | "register";
+}) => {
+  const validationSchema =
+    type === "login" ? loginValidationSchema : registerValidationSchema;
+  const form = useForm<z.infer<typeof validationSchema>>({
+    resolver: zodResolver(validationSchema),
+  });
 
-const Demo = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>();
-
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = (data: z.infer<typeof validationSchema>) => {
+    console.log({ data });
+  };
 
   return (
-    <form onSubmit={onSubmit}>
-      <Stack gap="4" align="flex-start" maxW="sm">
-        <Field.Root invalid={!!errors.firstName}>
-          <Field.Label>First name</Field.Label>
-          <Input {...register("firstName")} />
-          <Field.ErrorText>{errors.firstName?.message}</Field.ErrorText>
-        </Field.Root>
+    <>
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Card.Body>
+            <Stack gap="8" align="flex-start" maxW="sm">
+              {type === "register" && (
+                <AppTextInput
+                  label="Full Name"
+                  name="fullName"
+                  placeholder="John Doe"
+                  required
+                />
+              )}
 
-        <Field.Root invalid={!!errors.lastName}>
-          <Field.Label>Last name</Field.Label>
-          <Input {...register("lastName")} />
-          <Field.ErrorText>{errors.lastName?.message}</Field.ErrorText>
-        </Field.Root>
+              <AppTextInput
+                label="Email"
+                name="email"
+                type="email"
+                placeholder="john.doe@example.com"
+                required
+              />
 
-        <Button type="submit">Submit</Button>
-      </Stack>
-    </form>
+              {type === "login" ? (
+                <AppPasswordInput label="Password" name="password" required />
+              ) : (
+                <Flex gap="2">
+                  <AppPasswordInput
+                    label="Password"
+                    name="password"
+                    required
+                    helperText="Must be at least 8 characters"
+                  />
+                  <AppPasswordInput
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    required
+                  />
+                </Flex>
+              )}
+            </Stack>
+          </Card.Body>
+          <Card.Footer flexDirection="column" gap="6">
+            <Button type="submit" w="full" variant="solid">
+              {type === "login" ? "Login" : "Create Account"}
+            </Button>
+            {type === "login" ? (
+              <Text
+                textStyle="xs"
+                className="tracking-widest text-muted-foreground"
+              >
+                Don&apos;t have an account?{" "}
+                <Link href="/register">
+                  <span className="underline">Register</span>
+                </Link>
+              </Text>
+            ) : (
+              <Text
+                textStyle="xs"
+                className="tracking-widest text-muted-foreground"
+              >
+                Already have an account?{" "}
+                <Link href="/login">
+                  <span className="underline">Login</span>
+                </Link>
+              </Text>
+            )}
+          </Card.Footer>
+        </form>
+      </FormProvider>
+    </>
   );
 };
+
+export default AuthenticationForm;
