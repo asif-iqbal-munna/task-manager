@@ -17,14 +17,28 @@ const AuthenticationForm = ({
 }: {
   type?: "login" | "register";
 }) => {
-  const validationSchema =
-    type === "login" ? loginValidationSchema : registerValidationSchema;
-  const form = useForm<z.infer<typeof validationSchema>>({
-    resolver: zodResolver(validationSchema),
+  const form = useForm<z.infer<typeof registerValidationSchema>>({
+    resolver: zodResolver(registerValidationSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof validationSchema>) => {
-    console.log({ data });
+  const onSubmit = async (
+    data: z.infer<typeof registerValidationSchema>
+  ): Promise<void> => {
+    try {
+      const payload = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      };
+      const response = await fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      const user = await response.json();
+      console.log({ user });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -36,7 +50,7 @@ const AuthenticationForm = ({
               {type === "register" && (
                 <AppTextInput
                   label="Full Name"
-                  name="fullName"
+                  name="name"
                   placeholder="John Doe"
                   required
                 />

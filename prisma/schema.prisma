@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider    = "postgresql"
+  url         = env("DATABASE_URL")
+  directUrl   = env("DIRECT_URL")
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams               Team[]               
+  members             Member[]             
+  projects            Project[]            
+  taskCategories      TaskCategory[]       
+  tasks               Task[]               
+  taskLogs            TaskLog[]            
+  teamCollaborations  TeamCollaboration[]  
+  teamProjects        TeamProject[]        
+
+  @@map("users")
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+
+  owner_user_id String
+  owner_user    User @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  teamCollaborations TeamCollaboration[]
+  teamProjects       TeamProject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+  @@index([owner_user_id])
+}
+
+model Member {
+  id        String   @id @default(uuid())
+  name      String
+  role      String
+  capacity  Int      @default(0)
+
+  owner_user_id String
+  owner_user    User   @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  teamCollaborations TeamCollaboration[]
+  tasks              Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("members")
+  @@index([owner_user_id])
+}
+
+model TeamCollaboration {
+  id String @id @default(uuid())
+
+  team_id String
+  team    Team   @relation(fields: [team_id], references: [id], onDelete: Cascade)
+
+  member_id String
+  member    Member @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  owner_user_id String
+  owner_user    User   @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([team_id, member_id])
+  @@map("team_collaborations")
+  @@index([team_id])
+  @@index([member_id])
+  @@index([owner_user_id])
+}
+
+model Project {
+  id   String @id @default(uuid())
+  name String
+  desc String
+
+  owner_user_id String
+  owner_user    User @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  teamProjects TeamProject[]
+  tasks        Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+  @@index([owner_user_id])
+}
+
+model TeamProject {
+  id String @id @default(uuid())
+
+  team_id String
+  team    Team    @relation(fields: [team_id], references: [id], onDelete: Cascade)
+
+  project_id String
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  owner_user_id String
+  owner_user    User    @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([team_id, project_id])
+  @@map("team_projects")
+  @@index([team_id])
+  @@index([project_id])
+  @@index([owner_user_id])
+}
+
+model TaskCategory {
+  id   String @id @default(uuid())
+  name String
+
+  owner_user_id String
+  owner_user    User @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([owner_user_id, name])
+  @@map("task_categories")
+  @@index([owner_user_id])
+}
+
+model Task {
+  id   String @id @default(uuid())
+  title String
+  desc  String?
+
+  project_id String
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  owner_user_id String
+  owner_user    User @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  assigned_member_id String?
+  assigned_member    Member? @relation(fields: [assigned_member_id], references: [id], onDelete: SetNull)
+
+  status   TaskStatus   @default(PENDING)
+  priority TaskPriority @default(MEDIUM)
+
+  category_id String?
+  category    TaskCategory? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+
+  logs TaskLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tasks")
+  @@index([owner_user_id])
+  @@index([project_id])
+  @@index([assigned_member_id])
+  @@index([category_id])
+  @@index([status])
+}
+
+model TaskLog {
+  id String @id @default(uuid())
+  desc String?
+
+  task_id String
+  task    Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  owner_user_id String
+  owner_user    User @relation(fields: [owner_user_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("task_logs")
+  @@index([task_id])
+  @@index([owner_user_id])
+}

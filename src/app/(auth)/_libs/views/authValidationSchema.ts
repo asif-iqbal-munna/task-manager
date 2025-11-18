@@ -17,7 +17,7 @@ export const loginValidationSchema = z.object({
 
 export const registerValidationSchema = z
   .object({
-    fullName: z.string({
+    name: z.string({
       error: (issue) =>
         issue.input === undefined
           ? "Full name is required"

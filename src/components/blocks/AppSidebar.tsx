@@ -9,6 +9,7 @@ import { MdDashboard, MdCategory } from "react-icons/md";
 import { FaTasks, FaRegFolder, FaUser } from "react-icons/fa";
 import { HiUserGroup } from "react-icons/hi";
 import { IconType } from "react-icons";
+import { useColorModeValue } from "../ui/color-mode";
 
 interface NavItem {
   href: string;
@@ -49,6 +50,15 @@ const AppSidebar = () => {
     }
     return pathname.startsWith(item.href);
   };
+
+  // Color mode aware colors
+  const iconColor = useColorModeValue("gray.700", "gray.300");
+  const activeIconColor = useColorModeValue("gray.900", "gray.100");
+  const activeBg = useColorModeValue("gray.200", "gray.700");
+  const hoverBg = useColorModeValue("gray.100", "gray.800");
+  const textColor = useColorModeValue("gray.800", "gray.200");
+  const toggleIconHoverColor = useColorModeValue("gray.900", "gray.100");
+
   return (
     <Flex
       direction="column"
@@ -67,11 +77,13 @@ const AppSidebar = () => {
           >
             <Icon
               fontSize="2xl"
+              color={iconColor}
               as={!isOpen ? GoSidebarCollapse : GoSidebarExpand}
               cursor="pointer"
               transition="all 0.9s cubic-bezier(0.4, 0, 0.2, 1)"
               _hover={{
-                transform: isOpen ? "scale(1.1)" : "scale(1.1)",
+                transform: "scale(1.1)",
+                color: toggleIconHoverColor,
               }}
               onClick={toggleSidebar}
             />
@@ -87,19 +99,24 @@ const AppSidebar = () => {
                       gap={2}
                       p={2}
                       rounded="md"
-                      bg={active ? "gray.200" : "transparent"}
+                      bg={active ? activeBg : "transparent"}
                       _hover={{
-                        bg: "gray.100",
+                        bg: active ? activeBg : hoverBg,
                       }}
                       transition="background-color 0.2s ease-in-out"
                     >
-                      <Icon fontSize="2xl" as={item.icon} />
+                      <Icon
+                        fontSize="2xl"
+                        as={item.icon}
+                        color={active ? activeIconColor : iconColor}
+                      />
                       <Text
                         opacity={isOpen ? 1 : 0}
                         maxW={isOpen ? "200px" : "0px"}
                         overflow="hidden"
                         whiteSpace="nowrap"
                         transition="opacity 0.3s ease-in-out, max-width 0.3s ease-in-out"
+                        color={textColor}
                       >
                         {item.label}
                       </Text>
