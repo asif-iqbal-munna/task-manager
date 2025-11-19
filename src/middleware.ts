@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { extractUser, protectRoute } from "./lib/authMiddleware";
 
-export async function middleware(req: Request) {
-  const user = await extractUser();
+export async function middleware(req: NextRequest) {
+  const user = await extractUser(req);
 
   const protectionResult = protectRoute(user, req);
   if (protectionResult) return protectionResult;

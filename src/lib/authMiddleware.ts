@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-export const extractUser = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
+export const extractUser = async (req: NextRequest) => {
+  const cookieStore = req.cookies;
+  const token = cookieStore.get("accessToken")?.value || null;
+
+  const url = new URL(req.url);
+  const pathname = url.pathname;
+  console.log({ pathname });
+  console.log({ token });
 
   if (!token) {
     return null;
@@ -20,7 +24,7 @@ export const extractUser = async () => {
   }
 };
 
-export const protectRoute = (user: any, req: Request) => {
+export const protectRoute = (user: any, req: NextRequest) => {
   const url = new URL(req.url);
   const pathname = url.pathname;
 

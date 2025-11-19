@@ -1,7 +1,8 @@
 import React from "react";
+import ManageTeams from "./_libs/views/ManageTeams";
 
 const page = () => {
-  return <div>Teams</div>;
+  return <ManageTeams />;
 };
 
 export default page;

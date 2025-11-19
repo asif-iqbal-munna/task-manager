@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { ApiError } from "./errorHandler";
 import { sendResponse } from "./sendResponse";
 
 export function apiHandler(handler: Promise<any> | any) {
-  return async (req: Request, ...args: any[]) => {
+  return async (req: NextRequest, ...args: any[]) => {
     try {
       const result = await handler(req, ...args);
 
