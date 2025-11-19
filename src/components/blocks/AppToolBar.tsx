@@ -30,9 +30,16 @@ const AppToolBar = () => {
       align="center"
       justify="space-between"
     >
-      <Box pl="4">
-        <Link href="/">
-          <Image src="/img/logo.png" alt="logo" width="100" height="100" />
+      <Box pl="4" display="flex" alignItems="center" h="full">
+        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+          <Image
+            src="/img/logo.png"
+            alt="logo"
+            width={100}
+            height={100}
+            unoptimized
+            style={{ maxHeight: "100px", objectFit: "contain" }}
+          />
         </Link>
       </Box>
       <Flex pr="4" align="center" gap="2">

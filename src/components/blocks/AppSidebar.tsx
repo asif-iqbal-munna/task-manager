@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
+import { Box, ClientOnly, Flex, Icon, Skeleton, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -60,75 +60,91 @@ const AppSidebar = () => {
   const toggleIconHoverColor = useColorModeValue("gray.900", "gray.100");
 
   return (
-    <Flex
-      direction="column"
-      h="100%"
-      w={isOpen ? "200px" : "80px"}
-      transition="width 0.3s ease-in-out"
-      borderRight="1px solid"
-      borderColor="border"
-    >
-      <Box flex={1} p={4}>
-        <Flex direction="column" gap={8}>
-          <Flex
-            transition="all 0.9s cubic-bezier(0.4, 0, 0.2, 1)"
-            justify={isOpen ? "end" : "center"}
-            align="center"
-          >
-            <Icon
-              fontSize="2xl"
-              color={iconColor}
-              as={!isOpen ? GoSidebarCollapse : GoSidebarExpand}
-              cursor="pointer"
-              transition="all 0.9s cubic-bezier(0.4, 0, 0.2, 1)"
-              _hover={{
-                transform: "scale(1.1)",
-                color: toggleIconHoverColor,
-              }}
-              onClick={toggleSidebar}
-            />
-          </Flex>
-          <Box flex={1}>
-            <Flex direction="column" gap={4}>
-              {navItems.map((item) => {
-                const active = isActive(item);
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <Flex
-                      align="center"
-                      gap={2}
-                      p={2}
-                      rounded="md"
-                      bg={active ? activeBg : "transparent"}
-                      _hover={{
-                        bg: active ? activeBg : hoverBg,
-                      }}
-                      transition="background-color 0.2s ease-in-out"
-                    >
-                      <Icon
-                        fontSize="2xl"
-                        as={item.icon}
-                        color={active ? activeIconColor : iconColor}
-                      />
-                      <Text
-                        opacity={isOpen ? 1 : 0}
-                        maxW={isOpen ? "200px" : "0px"}
-                        overflow="hidden"
-                        whiteSpace="nowrap"
-                        transition="opacity 0.3s ease-in-out, max-width 0.3s ease-in-out"
-                        color={textColor}
-                      >
-                        {item.label}
-                      </Text>
-                    </Flex>
-                  </Link>
-                );
-              })}
-            </Flex>
+    <ClientOnly
+      fallback={
+        <Flex
+          direction="column"
+          h="100%"
+          w="80px"
+          borderRight="1px solid"
+          borderColor="border"
+        >
+          <Box flex={1} p={4}>
+            <Skeleton height="24px" width="24px" />
           </Box>
         </Flex>
-      </Box>
-    </Flex>
+      }
+    >
+      <Flex
+        direction="column"
+        h="100%"
+        w={isOpen ? "200px" : "80px"}
+        transition="width 0.3s ease-in-out"
+        borderRight="1px solid"
+        borderColor="border"
+      >
+        <Box flex={1} p={4}>
+          <Flex direction="column" gap={8}>
+            <Flex
+              transition="all 0.9s cubic-bezier(0.4, 0, 0.2, 1)"
+              justify={isOpen ? "end" : "center"}
+              align="center"
+            >
+              <Icon
+                fontSize="2xl"
+                color={iconColor}
+                as={!isOpen ? GoSidebarCollapse : GoSidebarExpand}
+                cursor="pointer"
+                transition="all 0.9s cubic-bezier(0.4, 0, 0.2, 1)"
+                _hover={{
+                  transform: "scale(1.1)",
+                  color: toggleIconHoverColor,
+                }}
+                onClick={toggleSidebar}
+              />
+            </Flex>
+            <Box flex={1}>
+              <Flex direction="column" gap={4}>
+                {navItems.map((item) => {
+                  const active = isActive(item);
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <Flex
+                        align="center"
+                        gap={2}
+                        p={2}
+                        rounded="md"
+                        bg={active ? activeBg : "transparent"}
+                        _hover={{
+                          bg: active ? activeBg : hoverBg,
+                        }}
+                        transition="background-color 0.2s ease-in-out"
+                      >
+                        <Icon
+                          fontSize="2xl"
+                          as={item.icon}
+                          color={active ? activeIconColor : iconColor}
+                        />
+                        <Text
+                          opacity={isOpen ? 1 : 0}
+                          maxW={isOpen ? "200px" : "0px"}
+                          overflow="hidden"
+                          whiteSpace="nowrap"
+                          transition="opacity 0.3s ease-in-out, max-width 0.3s ease-in-out"
+                          color={textColor}
+                        >
+                          {item.label}
+                        </Text>
+                      </Flex>
+                    </Link>
+                  );
+                })}
+              </Flex>
+            </Box>
+          </Flex>
+        </Box>
+      </Flex>
+    </ClientOnly>
   );
 };
 

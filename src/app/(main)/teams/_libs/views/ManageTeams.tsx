@@ -3,9 +3,19 @@ import React from "react";
 import { cookies } from "next/headers";
 import TeamHeader from "./TeamHeader";
 import TeamCard from "./TeamCard";
-import { Team } from "../../../../../generated/prisma/client";
+import { Prisma } from "../../../../../generated/prisma/client";
 
 export const TEAM_TAG = "teams";
+
+type TeamWithCollaborations = Prisma.TeamGetPayload<{
+  include: {
+    teamCollaborations: {
+      include: {
+        member: true;
+      };
+    };
+  };
+}>;
 
 async function getTeams() {
   const cookieStore = await cookies();
@@ -27,7 +37,7 @@ async function getTeams() {
   );
 
   const data = await res.json();
-  return data.data as Team[];
+  return data.data as TeamWithCollaborations[];
 }
 
 export default async function ManageTeams() {
@@ -37,7 +47,7 @@ export default async function ManageTeams() {
     <Container fluid p={0}>
       <TeamHeader />
       <Grid py="4" templateColumns="repeat(3, 1fr)" gap="4">
-        {teams.map((team: Team) => (
+        {teams.map((team) => (
           <TeamCard key={team.id} team={team} />
         ))}
       </Grid>

@@ -1,7 +1,8 @@
 import React from "react";
+import ManageMembers from "./_libs/views/ManageMembers";
 
 const page = () => {
-  return <div>Members</div>;
+  return <ManageMembers />;
 };
 
 export default page;

@@ -6,11 +6,6 @@ export const extractUser = async (req: NextRequest) => {
   const cookieStore = req.cookies;
   const token = cookieStore.get("accessToken")?.value || null;
 
-  const url = new URL(req.url);
-  const pathname = url.pathname;
-  console.log({ pathname });
-  console.log({ token });
-
   if (!token) {
     return null;
   }

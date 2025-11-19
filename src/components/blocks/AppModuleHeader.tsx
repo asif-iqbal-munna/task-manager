@@ -171,9 +171,18 @@ const AppModuleHeader = ({
         className="sticky top-0 z-10 bg-white"
         justify="space-between"
         align="center"
-        pb="4"
+        p="4"
         borderBottom="1px solid"
         borderColor="gray.200"
+        _dark={{
+          borderColor: "gray.700",
+          bg: "gray.900",
+        }}
+        _light={{
+          borderColor: "gray.200",
+          bg: "white",
+        }}
+        gap="4"
       >
         <Flex direction="column" justify="center" align="start" gap="2">
           <Heading as="h1" fontSize="2xl" fontWeight="bold">

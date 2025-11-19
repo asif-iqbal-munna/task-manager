@@ -7,6 +7,7 @@ export const teamValidationSchema = z.object({
         ? "Team name is required"
         : "Team name is required",
   }),
+  members: z.array(z.string()).nullable().optional().default([]),
 });
 
 export type TeamValidationSchema = z.infer<typeof teamValidationSchema>;
