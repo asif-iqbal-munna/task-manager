@@ -11,35 +11,55 @@ import {
 } from "./authValidationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { useLogin, useRegister } from "../apis/authApi";
+import { useRouter } from "next/navigation";
+
+type RegisterPayload = z.infer<typeof registerValidationSchema>;
+type LoginPayload = z.infer<typeof loginValidationSchema>;
 
 const AuthenticationForm = ({
   type = "login",
 }: {
   type?: "login" | "register";
 }) => {
-  const form = useForm<z.infer<typeof registerValidationSchema>>({
-    resolver: zodResolver(registerValidationSchema),
+  const validationSchema =
+    type === "login" ? loginValidationSchema : registerValidationSchema;
+
+  const form = useForm<RegisterPayload | LoginPayload>({
+    resolver: zodResolver(validationSchema),
   });
 
+  const router = useRouter();
+
+  const { registerUser, isPending: registerLoading } = useRegister();
+  const { loginUser, isPending: loginLoading } = useLogin();
+
   const onSubmit = async (
-    data: z.infer<typeof registerValidationSchema>
+    data: RegisterPayload | LoginPayload
   ): Promise<void> => {
     try {
-      const payload = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      };
-      const response = await fetch("/api/users", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-      const user = await response.json();
-      console.log({ user });
+      if (type === "register") {
+        const registerData = data as RegisterPayload;
+        const payload = {
+          email: registerData.email,
+          password: registerData.password,
+          name: registerData.name,
+        };
+
+        await registerUser(payload as RegisterPayload);
+
+        router.push("/login");
+      } else {
+        await loginUser(data as LoginPayload);
+
+        router.push("/");
+      }
     } catch (error) {
       console.error(error);
     }
   };
+
+  const isLoading = registerLoading || loginLoading;
 
   return (
     <>
@@ -84,7 +104,15 @@ const AuthenticationForm = ({
             </Stack>
           </Card.Body>
           <Card.Footer flexDirection="column" gap="6">
-            <Button type="submit" w="full" variant="solid">
+            <Button
+              loading={isLoading}
+              loadingText={
+                type === "register" ? "Creating account..." : "Logging in..."
+              }
+              type="submit"
+              w="full"
+              variant="solid"
+            >
               {type === "login" ? "Login" : "Create Account"}
             </Button>
             {type === "login" ? (
