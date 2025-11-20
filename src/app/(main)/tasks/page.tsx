@@ -1,7 +1,8 @@
 import React from "react";
+import ManageTasks from "./_libs/views/ManageTasks";
 
 const page = () => {
-  return <div>Tasks</div>;
+  return <ManageTasks />;
 };
 
 export default page;

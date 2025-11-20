@@ -1,12 +1,13 @@
 "use client";
 import { Box, Card, Flex, Icon, Text } from "@chakra-ui/react";
 import React from "react";
-import { Button } from "@chakra-ui/react";
 import { Prisma } from "../../../../../generated/prisma/client";
 import { LuUsers } from "react-icons/lu";
 import { FaRegEdit } from "react-icons/fa";
+import AppPopup from "../../../../../components/blocks/AppPopup";
+import CreateUpdateTeamForm from "../forms/CreateUpdateTeamForm";
 
-type TeamWithCollaborations = Prisma.TeamGetPayload<{
+export type TeamWithCollaborations = Prisma.TeamGetPayload<{
   include: {
     teamCollaborations: {
       include: {
@@ -22,7 +23,25 @@ const TeamCard = ({ team }: { team: TeamWithCollaborations }) => {
       <Card.Body gap="4">
         <Flex align="center" gap="3" justify="space-between">
           <Card.Title mt="2">{team.name}</Card.Title>
-          <Icon as={FaRegEdit} size="lg" cursor="pointer" color="gray.400" />
+          <AppPopup
+            isEdit={true}
+            renderEditButton={() => (
+              <Icon
+                as={FaRegEdit}
+                size="md"
+                cursor="pointer"
+                color="gray.400"
+              />
+            )}
+            module="Team"
+            render={(formRef) => (
+              <CreateUpdateTeamForm
+                isEdit={true}
+                team={team}
+                formRef={formRef}
+              />
+            )}
+          />
         </Flex>
         <Flex direction="column" gap="2">
           <Flex align="center" gap="3">
@@ -39,9 +58,6 @@ const TeamCard = ({ team }: { team: TeamWithCollaborations }) => {
           </Box>
         </Flex>
       </Card.Body>
-      <Card.Footer justifyContent="flex-end">
-        <Button variant="outline">Add Member</Button>
-      </Card.Footer>
     </Card.Root>
   );
 };

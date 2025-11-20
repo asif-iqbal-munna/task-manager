@@ -5,37 +5,60 @@ import AppTextInput from "../../../../../components/inputs/AppTextInput";
 import { Container, Stack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDialogDrawer } from "../../../../../components/blocks/AppModuleHeader";
+import { useDialogDrawer } from "../../../../../components/blocks/AppPopup";
 import { teamValidationSchema } from "./teamValidationSchema";
-import { z } from "zod";
-import { CREATE_TEAM_MUTATION_KEY, useCreateTeam } from "../apis/teamApi";
+import {
+  CREATE_TEAM_MUTATION_KEY,
+  UPDATE_TEAM_MUTATION_KEY,
+  useCreateTeam,
+  useUpdateTeam,
+} from "../apis/teamApi";
 import { revalidateTeams } from "../../../../utils/actions";
 import { useRouter } from "next/navigation";
 import AppMultiSelect from "../../../../../components/inputs/AppMultiSelect";
 import { useGetMembers } from "../../../members/_libs/apis/memberApi";
 import { TeamValidationSchema } from "./teamValidationSchema";
+import { TeamWithCollaborations } from "../views/TeamCard";
+
+interface CreateUpdateTeamFormProps {
+  formRef: React.RefObject<{ submit: () => void } | null>;
+  team?: TeamWithCollaborations;
+  isEdit?: boolean;
+}
 
 const CreateUpdateTeamForm = ({
   formRef,
-}: {
-  formRef: React.RefObject<{ submit: () => void } | null>;
-}) => {
+  team,
+  isEdit,
+}: CreateUpdateTeamFormProps) => {
   const { onClose, setMutationKey } = useDialogDrawer();
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(teamValidationSchema),
+    defaultValues: {
+      name: team?.name ?? "",
+      members:
+        team?.teamCollaborations.map(
+          (collaboration) => collaboration.member.id
+        ) ?? [],
+    },
   });
 
   const { createTeam } = useCreateTeam();
+  const { updateTeam } = useUpdateTeam();
   const { members = [] } = useGetMembers();
-  console.log({ members });
 
   const onSubmit = async (data: TeamValidationSchema) => {
     try {
-      setMutationKey(CREATE_TEAM_MUTATION_KEY);
-      console.log(data);
+      setMutationKey(
+        isEdit ? UPDATE_TEAM_MUTATION_KEY : CREATE_TEAM_MUTATION_KEY
+      );
 
-      await createTeam(data);
+      if (isEdit) {
+        await updateTeam({ data, id: team?.id as string });
+      } else {
+        await createTeam(data);
+      }
 
       await revalidateTeams();
       router.refresh();

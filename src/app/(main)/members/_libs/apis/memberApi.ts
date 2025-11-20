@@ -4,6 +4,7 @@ import { MemberValidationSchema } from "../forms/validateMember";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const CREATE_MEMBER_MUTATION_KEY = "create-member";
+export const UPDATE_MEMBER_MUTATION_KEY = "update-member";
 
 export const useCreateMember = () => {
   const { mutateAsync: createMember, isPending } = useMutation({
@@ -29,6 +30,38 @@ export const useCreateMember = () => {
     },
   });
   return { createMember, isPending };
+};
+
+export const useUpdateMember = () => {
+  const { mutateAsync: updateMember, isPending } = useMutation({
+    mutationKey: [UPDATE_MEMBER_MUTATION_KEY],
+    mutationFn: async ({
+      data,
+      id,
+    }: {
+      data: MemberValidationSchema;
+      id: string;
+    }) => {
+      const response = await requestHandler(
+        `/api/private/members/${id}`,
+        "PUT",
+        data
+      );
+      return response;
+    },
+    onSuccess: () => {
+      toaster.success({
+        title: "Member updated successfully",
+      });
+    },
+    onError: (error) => {
+      toaster.error({
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+  return { updateMember, isPending };
 };
 
 export const useGetMembers = () => {

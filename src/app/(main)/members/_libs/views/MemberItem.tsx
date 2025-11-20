@@ -1,6 +1,7 @@
 import React from "react";
 import { Member } from "../../../../../generated/prisma/client";
-import { Button, Table } from "@chakra-ui/react";
+import MemberActions from "./MemberActions";
+import { Table } from "@chakra-ui/react";
 
 const MemberItem = ({ member }: { member: Member }) => {
   return (
@@ -9,9 +10,7 @@ const MemberItem = ({ member }: { member: Member }) => {
       <Table.Cell>{member.role}</Table.Cell>
       <Table.Cell>{member.capacity}</Table.Cell>
       <Table.Cell>
-        <Button size="sm" variant="outline">
-          Edit
-        </Button>
+        <MemberActions member={member} />
       </Table.Cell>
     </Table.Row>
   );

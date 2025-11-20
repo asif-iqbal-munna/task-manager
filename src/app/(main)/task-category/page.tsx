@@ -1,7 +1,8 @@
 import React from "react";
+import ManageTaskCategories from "./_libs/views/ManageTaskCategories";
 
 const page = () => {
-  return <div>Task Category</div>;
+  return <ManageTaskCategories />;
 };
 
 export default page;

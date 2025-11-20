@@ -7,28 +7,54 @@ import {
   memberValidationSchema,
   MemberValidationSchema,
 } from "./validateMember";
-import { CREATE_MEMBER_MUTATION_KEY, useCreateMember } from "../apis/memberApi";
-import { useDialogDrawer } from "../../../../../components/blocks/AppModuleHeader";
+import {
+  CREATE_MEMBER_MUTATION_KEY,
+  UPDATE_MEMBER_MUTATION_KEY,
+  useCreateMember,
+  useUpdateMember,
+} from "../apis/memberApi";
 import { revalidateMembers } from "../../../../utils/actions";
+import { useDialogDrawer } from "../../../../../components/blocks/AppPopup";
+import { Member } from "../../../../../generated/prisma/client";
+import { useRouter } from "next/navigation";
+
+interface CreateUpdateMemberFormProps {
+  formRef: React.RefObject<{ submit: () => void } | null>;
+  member?: Member;
+  isEdit?: boolean;
+}
 
 const CreateUpdateMemberForm = ({
   formRef,
-}: {
-  formRef: React.RefObject<{ submit: () => void } | null>;
-}) => {
+  member,
+  isEdit,
+}: CreateUpdateMemberFormProps) => {
   const { onClose, setMutationKey } = useDialogDrawer();
+  const router = useRouter();
   const form = useForm<MemberValidationSchema>({
     resolver: zodResolver(memberValidationSchema),
+    defaultValues: {
+      name: member?.name ?? "",
+      role: member?.role ?? "",
+    },
   });
 
   const { createMember } = useCreateMember();
+  const { updateMember } = useUpdateMember();
 
   const onSubmit = async (data: MemberValidationSchema) => {
     try {
-      setMutationKey(CREATE_MEMBER_MUTATION_KEY);
-      await createMember(data);
+      setMutationKey(
+        isEdit ? UPDATE_MEMBER_MUTATION_KEY : CREATE_MEMBER_MUTATION_KEY
+      );
+      if (isEdit) {
+        await updateMember({ data, id: member?.id as string });
+      } else {
+        await createMember(data);
+      }
       onClose();
       revalidateMembers();
+      router.refresh();
       form.reset();
     } catch (error) {
       console.error(error);

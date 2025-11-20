@@ -15,7 +15,8 @@ export const requestHandler = async (
     const response = await axiosInstance.request({
       url,
       method,
-      data: body ?? undefined,
+      data: method !== "GET" ? body ?? undefined : undefined,
+      params: method === "GET" ? body : undefined,
     });
     return response.data;
   } catch (error: unknown) {
