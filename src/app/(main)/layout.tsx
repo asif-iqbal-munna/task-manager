@@ -15,7 +15,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <AppToolBar />
       <Flex flex={1} direction="row" overflow="hidden">
         <AppSidebar />
-        <Box flex="1" p={4} overflow="auto">
+        <Box flex="1" p={4} pt={0} overflow="auto">
           <ScrollArea.Root h="full" w="full">
             <ScrollArea.Viewport>
               <ScrollArea.Content spaceY="4" textStyle="sm">
