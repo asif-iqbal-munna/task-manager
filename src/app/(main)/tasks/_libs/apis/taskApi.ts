@@ -8,21 +8,40 @@ export const UPDATE_TASK_MUTATION_KEY = "update-task";
 
 export const useGetTasks = (filters?: {
   project_id?: string;
+  member_id?: string;
   start_date?: string;
   end_date?: string;
+  search?: string;
 }) => {
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ["tasks", filters],
+    queryKey: [
+      "tasks",
+      filters?.project_id,
+      filters?.member_id,
+      filters?.start_date,
+      filters?.end_date,
+      filters?.search,
+    ],
     queryFn: async () => {
       const params: Record<string, string> = {};
       if (filters?.project_id) {
         params.project_id = filters.project_id;
       }
+
+      if (filters?.member_id) {
+        params.member_id = filters.member_id;
+      }
+
       if (filters?.start_date) {
         params.start_date = filters.start_date;
       }
+
       if (filters?.end_date) {
         params.end_date = filters.end_date;
+      }
+
+      if (filters?.search && filters.search.trim()) {
+        params.search = filters.search.trim();
       }
       const response = await requestHandler(
         "/api/private/tasks",

@@ -7,6 +7,7 @@ import { throwErrorIf } from "../../../../../lib/errorHandler";
 const validationSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   role: z.string().min(1, { message: "Role is required" }),
+  capacity: z.number().min(0, { message: "Capacity must be greater than 0" }),
 });
 
 export const PUT = apiHandler(
@@ -15,7 +16,7 @@ export const PUT = apiHandler(
     { params }: { params: { member_id: string } }
   ) => {
     const payload = await request.json();
-    const { member_id } = params;
+    const { member_id } = await params;
 
     const user = JSON.parse(request.headers.get("x-user") || "{}");
 

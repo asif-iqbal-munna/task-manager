@@ -4,6 +4,7 @@ import z from "zod";
 import { prisma } from "../../../../lib/prisma";
 import { extractUser } from "../../../../lib/authMiddleware";
 import { throwErrorIf } from "../../../../lib/errorHandler";
+import { Prisma } from "../../../../generated/prisma/client";
 
 const TaskStatus = z.enum(["PENDING", "IN_PROGRESS", "DONE"]);
 const TaskPriority = z.enum(["LOW", "MEDIUM", "HIGH"]);
@@ -50,22 +51,32 @@ export const GET = apiHandler(async (request: NextRequest) => {
 
   const { searchParams } = new URL(request.url);
   const projectId = searchParams.get("project_id");
+  const memberId = searchParams.get("member_id");
   const startDate = searchParams.get("start_date");
   const endDate = searchParams.get("end_date");
+  const search = searchParams.get("search");
 
-  const where: {
-    owner_user_id: string;
-    project_id?: string;
-    createdAt?: {
-      gte?: Date;
-      lte?: Date;
-    };
-  } = {
+  const where: Prisma.TaskWhereInput = {
     owner_user_id: user?.id as string,
   };
 
   if (projectId) {
     where.project_id = projectId;
+  }
+
+  if (memberId) {
+    if (memberId === "unassigned") {
+      where.assigned_member_id = null;
+    } else {
+      where.assigned_member_id = memberId;
+    }
+  }
+
+  if (search && search.trim()) {
+    where.title = {
+      contains: search.trim(),
+      mode: "insensitive",
+    };
   }
 
   if (startDate || endDate) {

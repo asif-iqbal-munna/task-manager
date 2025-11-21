@@ -43,7 +43,7 @@ const ManageMembers = async () => {
             <Table.Row>
               <Table.ColumnHeader>Name</Table.ColumnHeader>
               <Table.ColumnHeader>Role</Table.ColumnHeader>
-              <Table.ColumnHeader>Workload</Table.ColumnHeader>
+              <Table.ColumnHeader>Capacity</Table.ColumnHeader>
               <Table.ColumnHeader>Actions</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>

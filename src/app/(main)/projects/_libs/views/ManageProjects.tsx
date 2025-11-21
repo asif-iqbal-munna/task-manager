@@ -50,6 +50,8 @@ async function getProjects() {
 
 export default async function ManageProjects() {
   const projects = await getProjects();
+
+  console.dir({ projects }, { depth: null });
   return (
     <Container fluid p={0}>
       <ProjectHeader />

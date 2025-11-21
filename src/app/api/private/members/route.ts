@@ -7,6 +7,7 @@ import z from "zod";
 const validationSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   role: z.string().min(1, { message: "Role is required" }),
+  capacity: z.number().min(0, { message: "Capacity must be greater than 0" }),
 });
 
 export const POST = apiHandler(async (request: NextRequest) => {
@@ -21,6 +22,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
     data: {
       name: validatedPayload.name,
       role: validatedPayload.role,
+      capacity: validatedPayload.capacity,
       owner_user_id: user?.id as string,
     },
   });
@@ -34,6 +36,32 @@ export const GET = apiHandler(async (request: NextRequest) => {
 
   const members = await prisma.member.findMany({
     where: { owner_user_id: user?.id as string },
+    select: {
+      id: true,
+      name: true,
+      capacity: true,
+      role: true,
+      tasks: {
+        select: {
+          id: true,
+        },
+      },
+      teamCollaborations: {
+        select: {
+          team_id: true,
+          team: {
+            select: {
+              id: true,
+              teamProjects: {
+                select: {
+                  project_id: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   return members;

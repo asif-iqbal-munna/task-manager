@@ -1,8 +1,10 @@
-import { createListCollection, Select } from "@chakra-ui/react";
+import { createListCollection, Icon, Select } from "@chakra-ui/react";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Portal } from "@chakra-ui/react";
 import { Field } from "@chakra-ui/react";
+import { FaInfoCircle } from "react-icons/fa";
+import { Tooltip } from "../ui/tooltip";
 
 interface AppSelectProps {
   options: { label: string; value: string }[];
@@ -10,6 +12,10 @@ interface AppSelectProps {
   name: string;
   placeholder?: string;
   required?: boolean;
+  helperText?: string;
+  labelInfo?: boolean;
+  infoText?: string;
+  onSelect?: (value: string) => void;
 }
 
 const AppSelect = ({
@@ -18,6 +24,10 @@ const AppSelect = ({
   options,
   placeholder,
   required,
+  helperText,
+  labelInfo = false,
+  infoText = "",
+  onSelect,
 }: AppSelectProps) => {
   const {
     control,
@@ -34,6 +44,11 @@ const AppSelect = ({
         <Field.Root required={required} invalid={!!errors[name]}>
           <Field.Label>
             {label} {required && <Field.RequiredIndicator />}
+            {labelInfo && (
+              <Tooltip content={infoText} interactive>
+                <Icon as={FaInfoCircle} />
+              </Tooltip>
+            )}
           </Field.Label>
           <Select.Root
             collection={collection}
@@ -42,13 +57,17 @@ const AppSelect = ({
             onValueChange={(details) => {
               const selectedValue = details.value?.[0];
               field.onChange(selectedValue || (required ? "" : null));
+              if (onSelect) {
+                onSelect(selectedValue);
+              }
             }}
-            onBlur={field.onBlur}
           >
             <Select.HiddenSelect />
             <Select.Control>
               <Select.Trigger>
-                <Select.ValueText placeholder={placeholder || `Select ${label}`} />
+                <Select.ValueText
+                  placeholder={placeholder || `Select ${label}`}
+                />
               </Select.Trigger>
               <Select.IndicatorGroup>
                 <Select.Indicator />
@@ -71,10 +90,9 @@ const AppSelect = ({
               </Select.Positioner>
             </Portal>
           </Select.Root>
+          {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
           {errors[name] && (
-            <Field.ErrorText>
-              {errors[name]?.message as string}
-            </Field.ErrorText>
+            <Field.ErrorText>{errors[name]?.message as string}</Field.ErrorText>
           )}
         </Field.Root>
       )}
@@ -83,4 +101,3 @@ const AppSelect = ({
 };
 
 export default AppSelect;
-

@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { requestHandler } from "../../../../lib/requestHandler";
 import {
   loginValidationSchema,
@@ -79,4 +79,21 @@ export const useLogout = () => {
     },
   });
   return { logoutUser, isPending };
+};
+
+export const useGetUser = () => {
+  const { data: user, isPending } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      try {
+        const response = await requestHandler("/api/private/user/me", "GET");
+        return response?.data || null;
+      } catch {
+        return null;
+      }
+    },
+    retry: false,
+    refetchOnWindowFocus: true,
+  });
+  return { user: user ?? null, isPending };
 };

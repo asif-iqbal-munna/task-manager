@@ -23,6 +23,7 @@ const AppTextInput = ({
     control,
     formState: { errors },
   } = useFormContext();
+  console.log({ errors });
   return (
     <Controller
       control={control}
@@ -35,8 +36,12 @@ const AppTextInput = ({
           <Input
             type={type}
             placeholder={placeholder}
-            {...field}
             value={field.value ?? ""}
+            onChange={(e) =>
+              field.onChange(
+                type === "number" ? Number(e.target.value) : e.target.value
+              )
+            }
           />
           {helperText && <Field.HelperText>{helperText}</Field.HelperText>}
           {errors[name] && (

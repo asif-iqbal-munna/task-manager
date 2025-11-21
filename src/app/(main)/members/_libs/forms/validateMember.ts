@@ -11,6 +11,12 @@ export const memberValidationSchema = z.object({
       error: (issue) => (issue.input ? "Role is required" : "Role is required"),
     })
     .min(1, "Role is required"),
+  capacity: z
+    .number({
+      error: (issue) =>
+        issue.input ? "Capacity is required" : "Capacity is required",
+    })
+    .transform((val) => val ?? 0),
 });
 
 export type MemberValidationSchema = z.infer<typeof memberValidationSchema>;

@@ -43,7 +43,7 @@ async function getTeams() {
 
 export default async function ManageTeams() {
   const teams = await getTeams();
-  console.log({ teams });
+
   return (
     <Container fluid p={0}>
       <TeamHeader />

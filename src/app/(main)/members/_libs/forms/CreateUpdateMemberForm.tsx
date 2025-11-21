@@ -36,6 +36,7 @@ const CreateUpdateMemberForm = ({
     defaultValues: {
       name: member?.name ?? "",
       role: member?.role ?? "",
+      capacity: member?.capacity ?? 0,
     },
   });
 
@@ -82,6 +83,13 @@ const CreateUpdateMemberForm = ({
               label="Role"
               name="role"
               placeholder="Enter role"
+              required
+            />
+            <AppTextInput
+              type="number"
+              label="Capacity"
+              name="capacity"
+              placeholder="Enter capacity"
               required
             />
           </Stack>

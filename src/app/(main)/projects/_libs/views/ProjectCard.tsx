@@ -32,6 +32,7 @@ const ProjectCard = ({ project }: { project: ProjectWithTeams }) => {
   const completedTasks = project.tasks.filter(
     (task) => task.status === "DONE"
   ).length;
+
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   const allTeamMembers = new Set<string>();

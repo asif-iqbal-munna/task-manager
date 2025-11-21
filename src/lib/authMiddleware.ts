@@ -29,7 +29,11 @@ export const protectRoute = (user: any, req: NextRequest) => {
     }
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const response = NextResponse.redirect(new URL("/login", req.url));
+      response.cookies.delete("accessToken");
+      response.cookies.delete("refreshToken");
+
+      return response;
     }
 
     return null;
