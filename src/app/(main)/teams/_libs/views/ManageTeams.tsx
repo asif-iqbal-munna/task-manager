@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import TeamHeader from "./TeamHeader";
 import TeamCard from "./TeamCard";
 import { Prisma } from "../../../../../generated/prisma/client";
+import "dotenv/config";
 
 export const TEAM_TAG = "teams";
 

@@ -4,6 +4,7 @@ import { Member } from "../../../../../generated/prisma/client";
 import { Box, Container, Table } from "@chakra-ui/react";
 import MemberHeader from "./MemberHeader";
 import MemberItem from "./MemberItem";
+import "dotenv/config";
 
 export const MEMBER_TAG = "member";
 

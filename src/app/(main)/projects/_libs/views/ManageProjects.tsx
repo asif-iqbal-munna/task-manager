@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import ProjectHeader from "./ProjectHeader";
 import ProjectCard from "./ProjectCard";
 import { Prisma } from "../../../../../generated/prisma/client";
-
+import "dotenv/config";
 export const PROJECT_TAG = "projects";
 
 type ProjectWithTeams = Prisma.ProjectGetPayload<{

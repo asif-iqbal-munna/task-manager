@@ -4,7 +4,7 @@ import { TaskCategory } from "../../../../../generated/prisma/client";
 import { Box, Container, Table } from "@chakra-ui/react";
 import TaskCategoryHeader from "./TaskCategoryHeader";
 import TaskCategoryItem from "./TaskCategoryItem";
-
+import "dotenv/config";
 export const TASK_CATEGORY_TAG = "task-category";
 
 type TaskCategoryWithTasks = TaskCategory & {
