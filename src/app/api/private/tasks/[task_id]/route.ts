@@ -17,11 +17,34 @@ const validationSchema = z.object({
   category_id: z.string().nullable().optional(),
 });
 
+const createReassignLogs = async (
+  user_id: string,
+  task_id: string,
+  task_title: string,
+  assigned_from_member_id: string,
+  assigned_to_member_id: string
+) => {
+  const fromMember = await prisma.member.findUnique({
+    where: { id: assigned_from_member_id },
+  });
+
+  const toMember = await prisma.member.findUnique({
+    where: { id: assigned_to_member_id },
+  });
+
+  const payload = {
+    task_id: task_id,
+    desc: `Task ${task_title} re-assigned from ${fromMember?.name} to ${toMember?.name}`,
+    owner_user_id: user_id,
+  };
+
+  await prisma.taskLog.create({
+    data: payload,
+  });
+};
+
 export const PUT = apiHandler(
-  async (
-    request: NextRequest,
-    { params }: { params: { task_id: string } }
-  ) => {
+  async (request: NextRequest, { params }: { params: { task_id: string } }) => {
     const payload = await request.json();
     const { task_id } = params;
 
@@ -30,6 +53,26 @@ export const PUT = apiHandler(
     throwErrorIf(!user, "Unauthorized", 401);
 
     const validatedPayload = validationSchema.parse(payload);
+
+    const oldAssignedMemberId = await prisma.task.findUnique({
+      where: { id: task_id },
+      select: { assigned_member_id: true },
+    });
+
+    if (
+      oldAssignedMemberId &&
+      validatedPayload.assigned_member_id &&
+      oldAssignedMemberId.assigned_member_id !==
+        validatedPayload.assigned_member_id
+    ) {
+      await createReassignLogs(
+        user?.id as string,
+        task_id,
+        validatedPayload.title,
+        oldAssignedMemberId.assigned_member_id as string,
+        validatedPayload.assigned_member_id as string
+      );
+    }
 
     const task = await prisma.task.update({
       where: { id: task_id },
@@ -47,4 +90,3 @@ export const PUT = apiHandler(
     return task;
   }
 );
-
