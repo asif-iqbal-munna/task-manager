@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
 import { Box, Flex, Spinner, Portal } from "@chakra-ui/react";
+import { useSearchParams } from "next/navigation";
 import { useGetProjects } from "../../../projects/_libs/apis/projectApi";
 import { useGetTasks, useUpdateTask } from "../apis/taskApi";
 import { useGetMembers } from "../../../members/_libs/apis/memberApi";
@@ -12,6 +13,7 @@ import { TaskWithRelations } from "./types";
 import { UPDATE_TASK_MUTATION_KEY } from "../apis/taskApi";
 
 const KanbanBoard = () => {
+  const searchParams = useSearchParams();
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [selectedMember, setSelectedMember] = useState<string>("");
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
@@ -24,6 +26,13 @@ const KanbanBoard = () => {
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const { updateTask } = useUpdateTask();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const projectId = searchParams.get("project_id");
+    if (projectId) {
+      setSelectedProject(projectId);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -95,7 +95,7 @@ const ProjectCard = ({ project }: { project: ProjectWithTeams }) => {
           </Flex>
         </Flex>
         <Flex justify="flex-end">
-          <Link href={`/projects/${project.id}`}>
+          <Link href={`/tasks?project_id=${project.id}`}>
             <Text fontSize="sm" color="blue.600" cursor="pointer">
               View →
             </Text>
