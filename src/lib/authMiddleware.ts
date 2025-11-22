@@ -31,7 +31,6 @@ export const protectRoute = (user: any, req: NextRequest) => {
     if (!user) {
       const response = NextResponse.redirect(new URL("/login", req.url));
       response.cookies.delete("accessToken");
-      response.cookies.delete("refreshToken");
 
       return response;
     }

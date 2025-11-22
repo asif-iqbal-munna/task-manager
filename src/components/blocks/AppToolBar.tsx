@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useGetUser, useLogout } from "../../app/(auth)/_libs/apis/authApi";
 import { useRouter } from "next/navigation";
-
+import LOGO from "../../assets/img/logo.png";
 const AppToolBar = () => {
   const { logoutUser } = useLogout();
 
@@ -34,7 +34,7 @@ const AppToolBar = () => {
       <Box pl="4" display="flex" alignItems="center" h="full">
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           <Image
-            src="/img/logo.png"
+            src={LOGO}
             alt="logo"
             width={100}
             height={100}

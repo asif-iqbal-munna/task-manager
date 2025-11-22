@@ -49,20 +49,14 @@ export const POST = apiHandler(async (request: NextRequest) => {
   };
 
   const accessTokenSecret = process.env.JWT_ACCESS_SECRET;
-  const refreshTokenSecret = process.env.JWT_REFRESH_SECRET;
   const accessTokenExpiry = process.env.JWT_ACCESS_EXPIRATION_TIME || "1d";
-  const refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRATION_TIME || "17d";
 
-  if (!accessTokenSecret || !refreshTokenSecret) {
+  if (!accessTokenSecret) {
     throw new Error("JWT secrets are not configured");
   }
 
   const accessToken = jwt.sign(userPayload, accessTokenSecret, {
     expiresIn: accessTokenExpiry,
-  } as jwt.SignOptions);
-
-  const refreshToken = jwt.sign(userPayload, refreshTokenSecret, {
-    expiresIn: refreshTokenExpiry,
   } as jwt.SignOptions);
 
   const cookieStore = await cookies();
@@ -77,16 +71,7 @@ export const POST = apiHandler(async (request: NextRequest) => {
     maxAge: 60 * 60 * 24 * 1, // 1 day
   });
 
-  cookieStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 17, // 17 days
-  });
-
   return {
     accessToken,
-    refreshToken,
   };
 });

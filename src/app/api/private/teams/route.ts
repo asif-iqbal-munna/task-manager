@@ -38,7 +38,6 @@ export const POST = apiHandler(async (request: NextRequest) => {
 
 export const GET = apiHandler(async (request: NextRequest) => {
   const user = await extractUser(request);
-  console.log({ extractUser: user });
 
   throwErrorIf(!user, "Unauthorized", 401);
 
