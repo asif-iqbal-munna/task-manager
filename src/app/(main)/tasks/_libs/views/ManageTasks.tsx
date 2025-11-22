@@ -1,5 +1,5 @@
-import React from "react";
-import { Container } from "@chakra-ui/react";
+import React, { Suspense } from "react";
+import { Container, Spinner, Box } from "@chakra-ui/react";
 import KanbanBoard from "./KanbanBoard";
 import TaskHeader from "./TaskHeader";
 
@@ -9,7 +9,20 @@ const ManageTasks = () => {
   return (
     <Container fluid p={0}>
       <TaskHeader />
-      <KanbanBoard />
+      <Suspense
+        fallback={
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            minH="200px"
+          >
+            <Spinner size="lg" color="blue.500" />
+          </Box>
+        }
+      >
+        <KanbanBoard />
+      </Suspense>
     </Container>
   );
 };
