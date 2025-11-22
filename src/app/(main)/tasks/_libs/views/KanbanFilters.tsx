@@ -66,13 +66,12 @@ const KanbanFilters = ({
   };
 
   return (
-    <Card.Root mb="6" bg="white" border={"none"} borderRadius="lg">
+    <Card.Root mb="6" bg="bg" border={"none"} borderRadius="lg">
       <Card.Body p="4">
         <Flex direction="column" gap="4">
-          {/* Input Fields Row */}
           <Flex gap="4" align="center" flexWrap="wrap">
             <HStack gap="2" flexShrink={0}>
-              <Icon as={LuSearch} color="gray.500" />
+              <Icon as={LuSearch} color="fg.muted" />
               <Input
                 type="text"
                 placeholder="Search tasks..."
@@ -81,15 +80,14 @@ const KanbanFilters = ({
                 size="sm"
                 w="200px"
                 variant="outline"
-                bg="white"
               />
               {searchQuery && (
                 <Icon
                   as={IoClose}
-                  color="gray.400"
+                  color="fg.muted"
                   cursor="pointer"
                   onClick={() => onSearchChange("")}
-                  _hover={{ color: "gray.600" }}
+                  _hover={{ color: "fg" }}
                 />
               )}
             </HStack>
@@ -97,7 +95,7 @@ const KanbanFilters = ({
             <Separator orientation="vertical" h="6" />
 
             <HStack gap="2" minW="200px" flexShrink={0}>
-              <Icon as={FaRegFolder} color="gray.500" />
+              <Icon as={FaRegFolder} color="fg.muted" />
               <Select.Root
                 collection={projectCollection}
                 value={selectedProject ? [selectedProject] : []}
@@ -106,10 +104,10 @@ const KanbanFilters = ({
                 }}
                 size="sm"
               >
-                <Select.Trigger w="full" bg="white">
+                <Select.Trigger w="full">
                   <Select.ValueText
                     placeholder="All Projects"
-                    color={selectedProject ? "gray.900" : "gray.500"}
+                    color={selectedProject ? "fg" : "fg.muted"}
                   />
                 </Select.Trigger>
                 <Portal>
@@ -129,7 +127,7 @@ const KanbanFilters = ({
             <Separator orientation="vertical" h="6" />
 
             <HStack gap="2" minW="200px" flexShrink={0}>
-              <Icon as={LuUser} color="gray.500" />
+              <Icon as={LuUser} color="fg.muted" />
               <Select.Root
                 collection={memberCollection}
                 value={selectedMember ? [selectedMember] : []}
@@ -138,10 +136,10 @@ const KanbanFilters = ({
                 }}
                 size="sm"
               >
-                <Select.Trigger w="full" bg="white">
+                <Select.Trigger w="full">
                   <Select.ValueText
                     placeholder="All"
-                    color={selectedMember ? "gray.900" : "gray.500"}
+                    color={selectedMember ? "fg" : "fg.muted"}
                   />
                 </Select.Trigger>
                 <Portal>
@@ -161,7 +159,7 @@ const KanbanFilters = ({
             <Separator orientation="vertical" h="6" />
 
             <HStack gap="2" flexShrink={0}>
-              <Icon as={LuCalendar} color="gray.500" />
+              <Icon as={LuCalendar} color="fg.muted" />
               <Input
                 type="date"
                 value={dateRange.start}
@@ -174,7 +172,7 @@ const KanbanFilters = ({
                 placeholder="Start date"
                 max={dateRange.end}
               />
-              <Text color="gray.400" fontSize="sm">
+              <Text color="fg.muted" fontSize="sm">
                 to
               </Text>
               <Input
@@ -192,17 +190,16 @@ const KanbanFilters = ({
             </HStack>
           </Flex>
 
-          {/* Active Filters Row */}
           {hasActiveFilters && (
             <Flex
               gap="2"
               align="center"
               flexWrap="wrap"
               borderTop="1px solid"
-              borderColor="gray.200"
+              borderColor="border.subtle"
               pt="3"
             >
-              <Text fontSize="sm" color="gray.600" fontWeight="medium" mr="2">
+              <Text fontSize="sm" color="fg.muted" fontWeight="medium" mr="2">
                 Active filters:
               </Text>
               <Flex gap="2" flexWrap="wrap" flex="1">
@@ -224,7 +221,7 @@ const KanbanFilters = ({
                       as={IoClose}
                       cursor="pointer"
                       onClick={() => onSearchChange("")}
-                      _hover={{ color: "blue.700" }}
+                      _hover={{ color: "blue.600" }}
                       size="xs"
                     />
                   </Badge>
@@ -247,7 +244,7 @@ const KanbanFilters = ({
                       as={IoClose}
                       cursor="pointer"
                       onClick={() => onProjectChange("")}
-                      _hover={{ color: "blue.700" }}
+                      _hover={{ color: "blue.600" }}
                       size="xs"
                     />
                   </Badge>
@@ -270,7 +267,7 @@ const KanbanFilters = ({
                       as={IoClose}
                       cursor="pointer"
                       onClick={() => onMemberChange("")}
-                      _hover={{ color: "blue.700" }}
+                      _hover={{ color: "blue.600" }}
                       size="xs"
                     />
                   </Badge>
@@ -293,7 +290,7 @@ const KanbanFilters = ({
                       as={IoClose}
                       cursor="pointer"
                       onClick={() => onDateRangeChange({ start: "", end: "" })}
-                      _hover={{ color: "blue.700" }}
+                      _hover={{ color: "blue.600" }}
                       size="xs"
                     />
                   </Badge>
@@ -303,8 +300,8 @@ const KanbanFilters = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleClearAll}
-                color="gray.600"
-                _hover={{ bg: "gray.100", color: "gray.900" }}
+                color="fg.muted"
+                _hover={{ bg: "bg.emphasized", color: "fg" }}
                 ml="auto"
                 flexShrink={0}
               >

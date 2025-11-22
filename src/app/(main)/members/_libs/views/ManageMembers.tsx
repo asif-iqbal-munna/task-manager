@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import React from "react";
-import { Member } from "../../../../../generated/prisma/client";
+import { Member, Task } from "../../../../../generated/prisma/client";
 import { Box, Container, Table } from "@chakra-ui/react";
 import MemberHeader from "./MemberHeader";
 import MemberItem from "./MemberItem";
@@ -28,12 +28,11 @@ async function getMembers() {
   );
 
   const data = await res.json();
-  return data.data as Member[];
+  return data.data as (Member & { tasks: Task[] })[];
 }
 
 const ManageMembers = async () => {
   const members = await getMembers();
-  console.log({ members });
   return (
     <Container fluid p={0}>
       <MemberHeader />
@@ -43,12 +42,12 @@ const ManageMembers = async () => {
             <Table.Row>
               <Table.ColumnHeader>Name</Table.ColumnHeader>
               <Table.ColumnHeader>Role</Table.ColumnHeader>
-              <Table.ColumnHeader>Capacity</Table.ColumnHeader>
+              <Table.ColumnHeader>Workload/Capacity</Table.ColumnHeader>
               <Table.ColumnHeader>Actions</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {members.map((member: Member) => (
+            {members.map((member: Member & { tasks: Task[] }) => (
               <MemberItem key={member.id} member={member} />
             ))}
           </Table.Body>

@@ -1,5 +1,13 @@
 "use client";
-import { Container, Flex, Stack } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Dialog,
+  Flex,
+  Portal,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import React, {
   useEffect,
   useImperativeHandle,
@@ -27,6 +35,8 @@ import { useGetMembers } from "../../../members/_libs/apis/memberApi";
 import { useGetTaskCategories } from "../../../task-category/_libs/apis/taskCategoryApi";
 import { useQueryClient } from "@tanstack/react-query";
 import AppTextArea from "../../../../../components/inputs/AppTextArea";
+import { toaster } from "../../../../../components/ui/toaster";
+import CapacityControl from "./CapacityControl";
 
 interface CreateUpdateTaskFormProps {
   formRef: React.RefObject<{ submit: () => void } | null>;
@@ -46,6 +56,14 @@ const CreateUpdateTaskForm = ({
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null
   );
+  const [capacityValidationError, setCapacityValidationError] = useState<{
+    isOpen: boolean;
+    memberId: string | null;
+  }>({
+    isOpen: false,
+    memberId: null,
+  });
+
   const { onClose, setMutationKey } = useDialogDrawer();
   const queryClient = useQueryClient();
   const form = useForm<TaskValidationSchema>({
@@ -142,6 +160,17 @@ const CreateUpdateTaskForm = ({
     }
   }, [task?.project_id]);
 
+  const validateCapacity = (value: string) => {
+    const member = members.data?.find(
+      (member: { id: string }) => member.id === value
+    );
+    if (member?.capacity && member?.tasks?.length >= member?.capacity) {
+      setCapacityValidationError({
+        isOpen: true,
+        memberId: value,
+      });
+    }
+  };
   return (
     <Container maxW="md">
       <FormProvider {...form}>
@@ -176,6 +205,7 @@ const CreateUpdateTaskForm = ({
                 options={selectedProjectId ? memberOptions : []}
                 labelInfo
                 infoText="Select project first to see the available members"
+                onSelect={(value) => validateCapacity(value)}
               />
             </Flex>
             <AppTextArea
@@ -217,6 +247,21 @@ const CreateUpdateTaskForm = ({
           </Stack>
         </form>
       </FormProvider>
+      {capacityValidationError.isOpen && (
+        <CapacityControl
+          isOpen={capacityValidationError.isOpen}
+          onClose={() =>
+            setCapacityValidationError({ isOpen: false, memberId: null })
+          }
+          memberOptions={memberOptions.filter(
+            (member: { label: string; value: string }) =>
+              member.value !== capacityValidationError.memberId
+          )}
+          setValue={(name: string, value: string) =>
+            form.setValue(name as keyof TaskValidationSchema, value)
+          }
+        />
+      )}
     </Container>
   );
 };

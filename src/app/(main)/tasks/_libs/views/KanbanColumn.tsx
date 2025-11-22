@@ -57,7 +57,6 @@ const KanbanColumn = ({
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
-    // Check if we're actually leaving the column
     if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
       onDragOverChange(null);
     }
@@ -67,11 +66,11 @@ const KanbanColumn = ({
     <Box
       flex="1"
       minW="300px"
-      bg={isDragOver ? "blue.50" : "gray.50"}
+      bg={isDragOver ? "bg.emphasized" : "bg.subtle"}
       p="4"
       borderRadius="lg"
       border="2px solid"
-      borderColor={isDragOver ? "blue.300" : "gray.200"}
+      borderColor={isDragOver ? "blue.300" : "border.emphasized"}
       borderStyle={isDragOver ? "dashed" : "solid"}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
@@ -85,10 +84,10 @@ const KanbanColumn = ({
         mb="4"
         pb="2"
         borderBottom="1px solid"
-        borderColor="gray.200"
+        borderColor="border.subtle"
       >
         <HStack gap="2">
-          <Text fontWeight="semibold" fontSize="md" color="gray.900">
+          <Text fontWeight="semibold" fontSize="md" color="fg">
             {status.label}
           </Text>
           <Badge colorPalette={status.color} size="sm" variant="subtle">
@@ -101,12 +100,12 @@ const KanbanColumn = ({
           <Box
             py="8"
             textAlign="center"
-            color="gray.400"
+            color="fg.muted"
             fontSize="sm"
             border="2px dashed"
-            borderColor="gray.200"
+            borderColor="border.subtle"
             borderRadius="md"
-            bg="white"
+            bg="bg"
           >
             No tasks
           </Box>
@@ -126,4 +125,3 @@ const KanbanColumn = ({
 };
 
 export default KanbanColumn;
-

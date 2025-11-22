@@ -4,7 +4,6 @@ import { Box, Flex, Spinner, Portal } from "@chakra-ui/react";
 import { useGetProjects } from "../../../projects/_libs/apis/projectApi";
 import { useGetTasks, useUpdateTask } from "../apis/taskApi";
 import { useGetMembers } from "../../../members/_libs/apis/memberApi";
-import { useRouter } from "next/navigation";
 import { useQueryClient, useIsMutating } from "@tanstack/react-query";
 import KanbanColumn from "./KanbanColumn";
 import KanbanFilters from "./KanbanFilters";
@@ -24,7 +23,6 @@ const KanbanBoard = () => {
   const [draggedTaskId, setDraggedTaskId] = useState<string>("");
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const { updateTask } = useUpdateTask();
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -114,7 +112,6 @@ const KanbanBoard = () => {
           },
         });
         queryClient.invalidateQueries({ queryKey: ["tasks"] });
-        router.refresh();
       }
     } catch (error) {
       console.error("Error updating task status:", error);
@@ -141,7 +138,7 @@ const KanbanBoard = () => {
             justifyContent="center"
           >
             <Box
-              bg="white"
+              bg="bg"
               p="6"
               borderRadius="lg"
               boxShadow="xl"
@@ -151,7 +148,7 @@ const KanbanBoard = () => {
               gap="3"
             >
               <Spinner size="lg" color="blue.500" />
-              <Box fontSize="sm" color="gray.600">
+              <Box fontSize="sm" color="fg.muted">
                 {isLoadingTasks ? "Loading tasks..." : "Updating task..."}
               </Box>
             </Box>
