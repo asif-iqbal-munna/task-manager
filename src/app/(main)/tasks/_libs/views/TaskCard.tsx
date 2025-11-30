@@ -11,8 +11,14 @@ import {
   createListCollection,
   Icon,
   Portal,
+  Button,
 } from "@chakra-ui/react";
-import { FaRegEdit } from "react-icons/fa";
+import {
+  FaRegEdit,
+  FaAngleDoubleRight,
+  FaAngleRight,
+  FaAngleLeft,
+} from "react-icons/fa";
 import AppPopup from "../../../../../components/blocks/AppPopup";
 import CreateUpdateTaskForm from "../forms/CreateUpdateTaskForm";
 import { useUpdateTask } from "../apis/taskApi";
@@ -22,15 +28,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { TaskWithRelations } from "./types";
 import { formatDate } from "../../../../../lib/formatDate";
 import CapacityControl from "../forms/CapacityControl";
-import { TaskValidationSchema } from "../forms/taskValidationSchema";
 
 interface TaskCardProps {
   task: TaskWithRelations;
-  onDragStart: (taskId: string) => void;
-  isDragging: boolean;
 }
 
-const TaskCard = ({ task, onDragStart, isDragging }: TaskCardProps) => {
+const TaskCard = ({ task }: TaskCardProps) => {
   const isDone = task.status === "DONE";
   const [capacityControl, setCapacityControl] = useState<{
     isOpen: boolean;
@@ -122,41 +125,30 @@ const TaskCard = ({ task, onDragStart, isDragging }: TaskCardProps) => {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent) => {
-    const target = e.target as HTMLElement;
-    if (
-      target.closest("button") ||
-      target.closest('[role="combobox"]') ||
-      target.closest('[role="dialog"]') ||
-      target.closest("input") ||
-      target.closest("select") ||
-      target.closest("svg") ||
-      target.closest('[data-drag-disabled="true"]')
-    ) {
-      e.preventDefault();
-      return;
+  const handleStatusChange = async (
+    newStatus: "PENDING" | "IN_PROGRESS" | "DONE"
+  ) => {
+    try {
+      await updateTask({
+        id: task.id,
+        data: {
+          ...task,
+          status: newStatus,
+          project_id: task.project_id,
+        },
+      });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("taskId", task.id);
-    e.dataTransfer.setData("currentStatus", task.status);
-    onDragStart(task.id);
-  };
-
-  const handleDragEnd = () => {
-    onDragStart("");
   };
 
   return (
-    <Box
-      w="full"
-      mb="3"
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      opacity={isDragging ? 0.5 : 1}
-      cursor="grab"
-      _active={{ cursor: "grabbing" }}
-    >
+    <Box w="full" mb="3">
+      {/* Status Navigation Buttons */}
+
       <Card.Root
         _hover={{ shadow: "md" }}
         w="full"
@@ -165,6 +157,78 @@ const TaskCard = ({ task, onDragStart, isDragging }: TaskCardProps) => {
         borderColor="border.emphasized"
         borderRadius="md"
       >
+        <Card.Header>
+          {task.status === "PENDING" && (
+            <Flex
+              position="absolute"
+              right="-12px"
+              transform="translateY(-50%)"
+              gap="1"
+              zIndex={10}
+            >
+              <Button
+                size="sm"
+                borderRadius="full"
+                p="2"
+                minW="32px"
+                h="32px"
+                onClick={() => handleStatusChange("IN_PROGRESS")}
+                colorPalette="blue"
+                variant="subtle"
+              >
+                <Icon as={FaAngleRight} />
+              </Button>
+              <Button
+                size="sm"
+                borderRadius="full"
+                p="2"
+                minW="32px"
+                h="32px"
+                onClick={() => handleStatusChange("DONE")}
+                colorPalette="green"
+                variant="subtle"
+              >
+                <Icon as={FaAngleDoubleRight} />
+              </Button>
+            </Flex>
+          )}
+          {task.status === "IN_PROGRESS" && (
+            <>
+              <Button
+                position="absolute"
+                left="-12px"
+                transform="translateY(-50%)"
+                size="sm"
+                borderRadius="full"
+                p="2"
+                minW="32px"
+                h="32px"
+                onClick={() => handleStatusChange("PENDING")}
+                colorPalette="gray"
+                variant="subtle"
+                zIndex={10}
+              >
+                <Icon as={FaAngleLeft} />
+              </Button>
+              <Button
+                position="absolute"
+                right="-12px"
+                transform="translateY(-50%)"
+                size="sm"
+                borderRadius="full"
+                p="2"
+                minW="32px"
+                h="32px"
+                onClick={() => handleStatusChange("DONE")}
+                colorPalette="green"
+                variant="subtle"
+                zIndex={10}
+              >
+                <Icon as={FaAngleRight} />
+              </Button>
+            </>
+          )}
+        </Card.Header>
         <Card.Body gap="3" p="4">
           <Flex gap="3" align="flex-start" direction="column">
             <Flex w="full" align="center" justify="space-between" gap="2">

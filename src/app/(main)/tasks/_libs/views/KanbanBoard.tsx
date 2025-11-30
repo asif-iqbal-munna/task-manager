@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Box, Flex, Spinner, Portal } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
 import { useGetProjects } from "../../../projects/_libs/apis/projectApi";
-import { useGetTasks, useUpdateTask } from "../apis/taskApi";
+import { useGetTasks } from "../apis/taskApi";
 import { useGetMembers } from "../../../members/_libs/apis/memberApi";
 import { useQueryClient, useIsMutating } from "@tanstack/react-query";
 import KanbanColumn from "./KanbanColumn";
@@ -22,10 +22,6 @@ const KanbanBoard = () => {
   });
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
-  const [draggedTaskId, setDraggedTaskId] = useState<string>("");
-  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
-  const { updateTask } = useUpdateTask();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const projectId = searchParams.get("project_id");
@@ -108,28 +104,6 @@ const KanbanBoard = () => {
       : members.data?.find((m: { id: string }) => m.id === selectedMember)
           ?.name;
 
-  const handleTaskDrop = async (taskId: string, newStatus: string) => {
-    try {
-      const task = tasks.find((t) => t.id === taskId);
-      if (task && task.status !== newStatus) {
-        await updateTask({
-          id: taskId,
-          data: {
-            ...task,
-            status: newStatus as "PENDING" | "IN_PROGRESS" | "DONE",
-            project_id: task.project_id,
-          },
-        });
-        queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      }
-    } catch (error) {
-      console.error("Error updating task status:", error);
-    } finally {
-      setDraggedTaskId("");
-      setDragOverColumn("");
-    }
-  };
-
   return (
     <Box position="relative">
       {isLoading && (
@@ -184,11 +158,6 @@ const KanbanBoard = () => {
             key={status.id}
             status={status}
             tasks={tasksByStatus[status.id] || []}
-            onDrop={handleTaskDrop}
-            isDragOver={dragOverColumn === status.id}
-            onDragOverChange={(statusId) => setDragOverColumn(statusId)}
-            draggedTaskId={draggedTaskId}
-            onDragStart={setDraggedTaskId}
           />
         ))}
       </Flex>
